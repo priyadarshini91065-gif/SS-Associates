@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Gallery</title>
+<link rel="stylesheet" href="album.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="hero">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <a href="portfolio-gallery.html" class="back-btn">
+            ← Back to Gallery
+        </a>
+
+        <h1 id="albumTitle"></h1>
+
+        <div class="gold-line"></div>
+
+        <p class="subtitle">
+            Capturing timeless moments with creativity, elegance, and perfection.
+        </p>
+
+    </div>
+
+</header>
+
+<!-- ================= GALLERY ================= -->
+
+<section class="gallery-section">
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+</section>
+
+<!-- ================= LIGHTBOX ================= -->
+
+<div class="lightbox" id="lightbox">
+
+    <span class="close">&times;</span>
+    <button class="lb-nav lb-prev" id="lbPrevBtn" aria-label="Previous">&#10094;</button>
+    <img id="lightbox-img">
+    <button class="lb-nav lb-next" id="lbNextBtn" aria-label="Next">&#10095;</button>
+    <div class="lb-counter" id="lbCounter"></div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const event = params.get("event");
+
+const image = params.get("image");
+
+document.getElementById("albumTitle").textContent = event;
+
+const albums = {
+
+"Birthday & Get Together":{
+
+    b1:[
+        "birthday and get together/b1.jpg",
+        "birthday and get together/b1-1.jpg"
+    ],
+
+    b2:[
+        "birthday and get together/b2.jpg",
+        "birthday and get together/b2-1.JPG"
+    ],
+
+    b3:[
+        "birthday and get together/b3.JPG",
+        "birthday and get together/b3-1.JPG",
+        "birthday and get together/b3-2.JPG",
+        "birthday and get together/b3-3.JPG",
+        "birthday and get together/b3-4.jpg"
+    ],
+
+    b4:[
+        "birthday and get together/b4.JPG",
+        "birthday and get together/b4-1.JPG",
+        "birthday and get together/b4-2.JPG",
+        "birthday and get together/b4-3.JPG",
+        "birthday and get together/b4-4.JPG"
+    ]
+
+},
+
+"Wedding":{
+
+    w1:[
+        "Wedding/w1.jpg",
+        "Wedding/w1-1.jpg",
+        "Wedding/w1-2.jpg",
+        "Wedding/w1-3.jpg"
+    ],
+
+    w2:[
+        "Wedding/w2.jpg",
+        "Wedding/w2-1.jpg",
+        "Wedding/w2-2.jpg"
+    ],
+
+    w3:[
+        "Wedding/w3.jpg",
+        "Wedding/w3-1.jpg",
+        "Wedding/w3-2.jpg",
+        "Wedding/w3-3.jpg"
+    ],
+
+    w4:[
+        "Wedding/w4.jpg",
+        "Wedding/w4-1.jpg",
+        "Wedding/w4-2.jpg",
+        "Wedding/w4-3.jpg"
+    ]
+
+},
+
+"Entertainment":{
+    e1:[
+        "entertainment/e1.jpg",
+        "entertainment/e1-1.jpg",
+        "entertainment/e1-2.jpg"
+    ],
+     e2:[
+        "entertainment/e2.jpg",
+        "entertainment/e2-1.jpg",
+        "entertainment/e2-2.jpg",
+        "entertainment/e2-3.jpg"
+    ],
+    e3:[
+        "entertainment/e3.jpg",
+        "entertainment/e3-1.jpg",
+        "entertainment/e3-2.jpg"
+
+    ],
+    e4:[
+        "entertainment/e4.jpg",
+        "entertainment/e4-1.jpg",
+        "entertainment/e4-2.jpg",
+        "entertainment/e4-3.jpg",
+        "entertainment/e4-4.jpg",
+        "entertainment/e4-5.jpg"
+    ]
+
+},
+"Corporate Meet":{
+    c1:[
+        "coporate event/c1.JPG",
+        "coporate event/c1-1.JPG",
+        "coporate event/c1-2.JPG",
+        "coporate event/c1-3.JPG"
+    ],
+     c2:[
+        "coporate event/c2.JPG",
+        "coporate event/c2-1.JPG",
+        "coporate event/c2-2.JPG",
+        "coporate event/c2-3.JPG"
+    ],
+     c3:[
+        "coporate event/c3.JPG",
+        "coporate event/c3-1.JPG",
+        "coporate event/c3-2.JPG",
+        "coporate event/c3-3.JPG",
+        "coporate event/c3-4.JPG",
+        
+
+    ],
+     c4:[
+        "coporate event/c4.JPG",
+        "coporate event/c4-1.JPG",
+        "coporate event/c4-2.JPG",
+        "coporate event/c4-3.JPG"
+       
+    ],
+
+},
+
+
+"Conference":{
+    co1:[
+        "Confedence/co1.JPG",
+        "Confedence/co1-1.JPG",
+        "Confedence/co1-2.JPG",
+        "Confedence/co1-3.JPG",
+        "Confedence/co1-4.JPG"
+    ],
+     co2:[
+        "Confedence/co2.JPG",
+        "Confedence/co2-1.JPG",
+        "Confedence/co2-3.JPG",
+        "Confedence/co2-4.JPG"
+    ],
+    co3:[
+        "Confedence/co3.JPG",
+        "Confedence/co3-1.JPG",
+        "Confedence/co3-2.JPG",
+        "Confedence/co3-3.JPG",
+    ],
+    co4:[
+     "Confedence/co4.JPG",
+      "Confedence/co4-1.JPG",
+      "Confedence/co4-2.JPG",
+      "Confedence/co4-3.JPG",
+    ]
+}
+
+
+};
+
+const grid = document.getElementById("galleryGrid");
+
+let currentSet = [];
+let lbIndex = 0;
+
+function updateLbImage(){
+    document.getElementById("lightbox-img").src = currentSet[lbIndex];
+    document.getElementById("lbCounter").textContent = (lbIndex+1) + " / " + currentSet.length;
+}
+
+if(albums[event] && albums[event][image]){
+
+    currentSet = albums[event][image];
+
+    albums[event][image].forEach((img,index)=>{
+
+        const card=document.createElement("div");
+
+        card.className="gallery-card";
+
+        card.style.animationDelay=(index*0.08)+"s";
+
+        const imageElement=document.createElement("img");
+
+        imageElement.src=img;
+
+        imageElement.alt="";
+
+        imageElement.loading="lazy";
+
+        imageElement.onclick=()=>{
+
+            document.getElementById("lightbox").style.display="flex";
+
+            lbIndex = index;
+            updateLbImage();
+
+            document.body.style.overflow="hidden";
+
+        }
+
+        card.appendChild(imageElement);
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+else{
+
+grid.innerHTML=`
+
+<div class="no-images">
+
+<h2>No Images Found</h2>
+
+<p>Please check the selected album.</p>
+
+</div>
+
+`;
+
+}
+
+/* ================= LIGHTBOX ================= */
+
+const lightbox=document.getElementById("lightbox");
+
+const close=document.querySelector(".close");
+
+close.onclick=()=>{
+
+lightbox.style.display="none";
+
+document.body.style.overflow="auto";
+
+}
+
+function lbShowNext(){
+    lbIndex = (lbIndex + 1) % currentSet.length;
+    updateLbImage();
+}
+function lbShowPrev(){
+    lbIndex = (lbIndex - 1 + currentSet.length) % currentSet.length;
+    updateLbImage();
+}
+
+document.getElementById("lbNextBtn").onclick=(e)=>{ e.stopPropagation(); lbShowNext(); };
+document.getElementById("lbPrevBtn").onclick=(e)=>{ e.stopPropagation(); lbShowPrev(); };
+
+document.addEventListener("keydown",(e)=>{
+    if(lightbox.style.display!=="flex") return;
+    if(e.key==="Escape"){ lightbox.style.display="none"; document.body.style.overflow="auto"; }
+    if(e.key==="ArrowRight") lbShowNext();
+    if(e.key==="ArrowLeft") lbShowPrev();
+});
+
+let lbTouchStartX=0;
+lightbox.addEventListener("touchstart",(e)=>{ lbTouchStartX=e.changedTouches[0].screenX; },{passive:true});
+lightbox.addEventListener("touchend",(e)=>{
+    const dx=e.changedTouches[0].screenX - lbTouchStartX;
+    if(dx>50) lbShowPrev();
+    else if(dx<-50) lbShowNext();
+},{passive:true});
+
+lightbox.onclick=(e)=>{
+
+if(e.target===lightbox){
+
+lightbox.style.display="none";
+
+document.body.style.overflow="auto";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
